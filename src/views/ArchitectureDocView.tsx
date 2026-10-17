@@ -8,7 +8,6 @@ import {
   Award,
   BookOpen,
   ArrowRight,
-  Sparkles,
   CheckCircle2,
   Terminal,
   BrainCircuit
@@ -25,7 +24,7 @@ export const ArchitectureDocView: React.FC<ArchitectureDocViewProps> = ({ onNavi
       <div className="border-b border-slate-800 pb-6 space-y-2">
         <div className="flex items-center space-x-2 text-xs font-mono text-emerald-400">
           <FileText className="w-4 h-4" />
-          <span>Undergraduate Research Project Documentation & Academic Defence Reference</span>
+          <span>Undergraduate Research Project Documentation & Academic Reference</span>
         </div>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-slate-100 tracking-tight">
           System Architecture, Data Model & Pedagogical Rules
@@ -255,40 +254,6 @@ export const ArchitectureDocView: React.FC<ArchitectureDocViewProps> = ({ onNavi
             <li><strong className="text-slate-200">Hidden Test Masking: </strong>Hidden test inputs and expected outputs are evaluated in the sandbox, with only passed/failed outcomes returned to the client.</li>
             <li><strong className="text-slate-200">Production Sandbox Architecture Notice: </strong>For cloud production multi-tenant environments, this process isolation boundary is designed to interface with containerized microVMs (e.g. gVisor, Docker runc with seccomp, or AWS Firecracker microVMs) to enforce kernel syscall isolation.</li>
           </ul>
-        </div>
-      </section>
-
-      {/* 5. DEFENCE DEMONSTRATION WALKTHROUGH */}
-      <section className="space-y-4">
-        <h2 className="text-xl font-bold text-slate-100 flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-teal-400" />
-          5. University Project Defence Walkthrough Guide
-        </h2>
-
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-6 space-y-4 text-xs text-slate-300">
-          <p className="text-slate-200 font-semibold">
-            Recommended sequence for presentation examiners:
-          </p>
-          <ol className="space-y-3 list-decimal pl-5 leading-relaxed text-slate-400">
-            <li>
-              <strong className="text-slate-200">Demonstrate Student Registration & Pre-Test: </strong>Click "Demo Student" in the top bar. Show the active recommendation ("RULE 1: Diagnostic Assessment"). Complete the 10-question pre-test and observe recommendations calibrate.
-            </li>
-            <li>
-              <strong className="text-slate-200">Demonstrate Prerequisite Enforcement: </strong>In the Curriculum Map, show that downstream modules (e.g. Loops, Functions) are locked until earlier modules reach &ge; 70% mastery.
-            </li>
-            <li>
-              <strong className="text-slate-200">Demonstrate Code Assessment Sandbox & Error Diagnosis: </strong>Open Module 2 or Module 7 exercise. Submit an intentional error (e.g. missing parenthesis for SyntaxError, or while loop for TimeLimitExceeded). Show real-time taxonomic diagnosis.
-            </li>
-            <li>
-              <strong className="text-slate-200">Demonstrate Progressive Scaffolding Hints: </strong>Unlock Level 1 (Concept), Level 2 (Target), and Level 3 (Debugging strategy). Show that hint usage is persisted in the student model without punitive bias.
-            </li>
-            <li>
-              <strong className="text-slate-200">Demonstrate Student Model & Mastery Recalculation: </strong>Submit a correct solution. Observe topic mastery score updating and triggering RULE 6 (Provisional Mastery advancement).
-            </li>
-            <li>
-              <strong className="text-slate-200">Demonstrate Lecturer / Research Management: </strong>Switch to "Demo Lecturer" in the top bar. Inspect class error distribution, student mastery roster, edit curriculum content, and download research CSV exports.
-            </li>
-          </ol>
         </div>
       </section>
     </div>

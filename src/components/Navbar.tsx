@@ -184,32 +184,34 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
 
           {user?.role === 'administrator' && (
-            <button
-              type="button"
-              onClick={() => onNavigate('admin')}
-              className={`flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer ${
-                currentView === 'admin'
-                  ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30'
-                  : 'text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/40'
-              }`}
-            >
-              <Shield className="w-3.5 h-3.5 mr-1.5" />
-              Lecturer Portal
-            </button>
-          )}
+            <>
+              <button
+                type="button"
+                onClick={() => onNavigate('admin')}
+                className={`flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer ${
+                  currentView === 'admin'
+                    ? 'bg-indigo-500/10 text-indigo-400 border border-indigo-500/30'
+                    : 'text-indigo-400 hover:text-indigo-300 hover:bg-indigo-950/40'
+                }`}
+              >
+                <Shield className="w-3.5 h-3.5 mr-1.5" />
+                Lecturer Portal
+              </button>
 
-          <button
-            type="button"
-            onClick={() => onNavigate('architecture')}
-            className={`flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer ${
-              currentView === 'architecture'
-                ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5 mr-1.5" />
-            System Architecture
-          </button>
+              <button
+                type="button"
+                onClick={() => onNavigate('architecture')}
+                className={`flex items-center px-3 py-2 rounded-lg transition-colors cursor-pointer ${
+                  currentView === 'architecture'
+                    ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900'
+                }`}
+              >
+                <FileText className="w-3.5 h-3.5 mr-1.5" />
+                System Architecture
+              </button>
+            </>
+          )}
         </nav>
 
         {/* Right Action */}

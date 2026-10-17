@@ -14,9 +14,12 @@ import {
   BookMarked,
   Sparkles,
   HelpCircle,
-  X
+  X,
+  Layers,
+  FileText
 } from 'lucide-react';
 import { api } from '../api';
+import { ArchitectureDocView } from './ArchitectureDocView';
 import type { AdminAnalyticsData, Topic } from '../types';
 
 interface AdminPortalViewProps {
@@ -28,8 +31,8 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ onNavigate }) 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Tab: 'overview' | 'curriculum' | 'export'
-  const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'export'>('overview');
+  // Tab: 'overview' | 'curriculum' | 'export' | 'architecture'
+  const [activeTab, setActiveTab] = useState<'overview' | 'curriculum' | 'export' | 'architecture'>('overview');
 
   // Data dictionary modal
   const [showDataDict, setShowDataDict] = useState(false);
@@ -201,6 +204,18 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ onNavigate }) 
         <div className="flex items-center gap-2">
           <button
             type="button"
+            onClick={() => setActiveTab('architecture')}
+            className={`px-3.5 py-2 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer ${
+              activeTab === 'architecture'
+                ? 'bg-indigo-600 text-white border-indigo-500'
+                : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700'
+            }`}
+          >
+            <Layers className="w-3.5 h-3.5 text-emerald-400" />
+            System Architecture
+          </button>
+          <button
+            type="button"
             disabled={resetting}
             onClick={handleResetDemoData}
             className="px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 border border-slate-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
@@ -220,11 +235,11 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ onNavigate }) 
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-800 space-x-4 text-xs font-semibold">
+      <div className="flex border-b border-slate-800 space-x-4 text-xs font-semibold overflow-x-auto">
         <button
           type="button"
           onClick={() => setActiveTab('overview')}
-          className={`pb-3 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`pb-3 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
             activeTab === 'overview'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -236,7 +251,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ onNavigate }) 
         <button
           type="button"
           onClick={() => setActiveTab('curriculum')}
-          className={`pb-3 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`pb-3 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
             activeTab === 'curriculum'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -248,7 +263,7 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ onNavigate }) 
         <button
           type="button"
           onClick={() => setActiveTab('export')}
-          className={`pb-3 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 ${
+          className={`pb-3 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
             activeTab === 'export'
               ? 'border-indigo-500 text-indigo-400'
               : 'border-transparent text-slate-400 hover:text-slate-200'
@@ -256,6 +271,18 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ onNavigate }) 
         >
           <FileSpreadsheet className="w-4 h-4" />
           Research Dataset CSV Export
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab('architecture')}
+          className={`pb-3 border-b-2 transition-all cursor-pointer flex items-center gap-1.5 whitespace-nowrap ${
+            activeTab === 'architecture'
+              ? 'border-indigo-500 text-indigo-400'
+              : 'border-transparent text-slate-400 hover:text-slate-200'
+          }`}
+        >
+          <Layers className="w-4 h-4" />
+          System Architecture & Rules
         </button>
       </div>
 
@@ -626,6 +653,13 @@ export const AdminPortalView: React.FC<AdminPortalViewProps> = ({ onNavigate }) 
               </button>
             </div>
           </div>
+        </div>
+      )}
+
+      {/* TAB 4: SYSTEM ARCHITECTURE & PEDAGOGICAL RULES */}
+      {activeTab === 'architecture' && (
+        <div className="rounded-2xl border border-slate-800 bg-slate-900/40 p-4 sm:p-6 shadow-xl">
+          <ArchitectureDocView onNavigate={onNavigate} />
         </div>
       )}
 

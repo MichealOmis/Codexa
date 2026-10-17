@@ -42,6 +42,10 @@ export default function App() {
   };
 
   const handleNavigate = (view: string, param?: string) => {
+    if (view === 'architecture' && user?.role === 'student') {
+      setCurrentView('dashboard');
+      return;
+    }
     setCurrentView(view);
     setViewParam(param);
     window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -148,7 +152,11 @@ export default function App() {
         )}
 
         {currentView === 'architecture' && (
-          <ArchitectureDocView onNavigate={handleNavigate} />
+          user?.role === 'student' ? (
+            <StudentDashboard onNavigate={handleNavigate} />
+          ) : (
+            <ArchitectureDocView onNavigate={handleNavigate} />
+          )
         )}
 
         {currentView === 'leaderboard' && (
@@ -176,14 +184,18 @@ export default function App() {
             >
               Class Leaderboard
             </button>
-            <span>•</span>
-            <button
-              type="button"
-              onClick={() => handleNavigate('architecture')}
-              className="hover:text-slate-300 cursor-pointer"
-            >
-              Architecture & Rules
-            </button>
+            {user?.role !== 'student' && (
+              <>
+                <span>•</span>
+                <button
+                  type="button"
+                  onClick={() => handleNavigate('architecture')}
+                  className="hover:text-slate-300 cursor-pointer"
+                >
+                  Architecture & Rules
+                </button>
+              </>
+            )}
             <span>•</span>
             <button
               type="button"
