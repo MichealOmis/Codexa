@@ -195,6 +195,46 @@ app.post('/api/auth/login', async (req: Request, res: Response) => {
   }
 });
 
+app.post('/api/auth/firebase-login', async (req: Request, res: Response) => {
+  try {
+    const { email, displayName, firebaseUid } = req.body;
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required for Firebase login.' });
+    }
+    let user = await getUserByEmail(email);
+    if (!user) {
+      const username = (displayName || email.split('@')[0] || 'student').trim().substring(0, 100);
+      const userId = `usr_fb_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
+      const randomHex = crypto.randomBytes(3).toString('hex').toUpperCase();
+      const participantId = `PARTICIPANT-${randomHex}`;
+
+      user = await createUser({
+        id: userId,
+        username,
+        email: email.toLowerCase().trim(),
+        password_hash: hashPassword(firebaseUid || 'firebase-oauth-token'),
+        role: 'student',
+        participant_id: participantId,
+        created_at: new Date().toISOString()
+      });
+    }
+
+    const safeUser: SafeUser = {
+      id: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.role,
+      participant_id: user.participant_id,
+      created_at: user.created_at
+    };
+
+    const token = createSession(user.id);
+    return res.json({ user: safeUser, token });
+  } catch (err: any) {
+    return res.status(500).json({ error: err.message || 'Firebase login failed.' });
+  }
+});
+
 app.get('/api/auth/me', (req: AuthRequest, res: Response) => {
   if (!req.user) {
     return res.status(401).json({ error: 'Not authenticated.' });

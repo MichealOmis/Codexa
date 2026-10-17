@@ -49,6 +49,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             <span className="text-slate-400">Anonymous Visitor</span>
           )}
 
+          <span className="hidden sm:inline-flex items-center gap-1 text-[10px] text-amber-400/90 bg-amber-950/40 border border-amber-800/40 px-1.5 py-0.5 rounded">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            Firebase Cloud
+          </span>
+
           {/* Quick Demo Switcher */}
           <div className="flex items-center space-x-1.5 pl-2 border-l border-slate-800">
             <button

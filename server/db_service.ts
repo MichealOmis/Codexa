@@ -1,4 +1,5 @@
-import { execFile } from 'child_process';
+import initSqlJs, { Database, SqlJsStatic } from 'sql.js';
+import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import type {
@@ -19,71 +20,130 @@ import type {
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const BRIDGE_PATH = path.join(__dirname, 'db_bridge.py');
+const DB_PATH = path.join(path.dirname(__dirname), 'data', 'pytutor.db');
+const SEED_DB_PATH = path.join(path.dirname(__dirname), 'data', 'pytutor_seed.db');
+
+let SQL: SqlJsStatic | null = null;
+let dbInstance: Database | null = null;
+let dbInitPromise: Promise<Database> | null = null;
+
+async function getDb(): Promise<Database> {
+  if (dbInstance) return dbInstance;
+  if (dbInitPromise) return dbInitPromise;
+
+  dbInitPromise = (async () => {
+    SQL = await initSqlJs();
+    let fileBuffer: Buffer | null = null;
+    if (fs.existsSync(DB_PATH)) {
+      try {
+        fileBuffer = fs.readFileSync(DB_PATH);
+      } catch (e) {
+        console.warn('Could not read DB_PATH:', e);
+      }
+    }
+    if ((!fileBuffer || fileBuffer.length === 0) && fs.existsSync(SEED_DB_PATH)) {
+      try {
+        fileBuffer = fs.readFileSync(SEED_DB_PATH);
+      } catch (e) {
+        console.warn('Could not read SEED_DB_PATH:', e);
+      }
+    }
+    if (!fileBuffer || fileBuffer.length === 0) {
+      dbInstance = new SQL.Database();
+    } else {
+      dbInstance = new SQL.Database(fileBuffer);
+    }
+    return dbInstance;
+  })();
+
+  return dbInitPromise;
+}
+
+function persistDb() {
+  if (!dbInstance) return;
+  try {
+    const data = dbInstance.export();
+    const dir = path.dirname(DB_PATH);
+    if (!fs.existsSync(dir)) {
+      fs.mkdirSync(dir, { recursive: true });
+    }
+    fs.writeFileSync(DB_PATH, Buffer.from(data));
+  } catch (err) {
+    console.error('Failed to persist database to disk:', err);
+  }
+}
 
 /**
- * Execute parameterized query via Python SQLite bridge
+ * Execute parameterized query via in-process SQLite
  */
 export async function dbQuery<T = any>(sql: string, params: any[] = []): Promise<T[]> {
-  const payload = JSON.stringify({ action: 'query', sql, params });
-  return new Promise((resolve, reject) => {
-    execFile('python3', [BRIDGE_PATH, payload], { maxBuffer: 10 * 1024 * 1024 }, (err, stdout, stderr) => {
-      if (err) {
-        return reject(new Error(`DB Bridge error: ${stderr || err.message}`));
-      }
-      try {
-        const res = JSON.parse(stdout.trim());
-        if (res.status === 'error') {
-          return reject(new Error(res.message));
-        }
-        resolve(res.rows || []);
-      } catch (parseErr: any) {
-        reject(new Error(`Failed to parse DB bridge output: ${stdout}`));
-      }
-    });
-  });
+  const db = await getDb();
+  try {
+    const stmt = db.prepare(sql);
+    if (params && params.length > 0) {
+      const sanitized = params.map(p => (typeof p === 'boolean' ? (p ? 1 : 0) : p));
+      stmt.bind(sanitized);
+    }
+    const rows: T[] = [];
+    while (stmt.step()) {
+      rows.push(stmt.getAsObject() as T);
+    }
+    stmt.free();
+    return rows;
+  } catch (err: any) {
+    throw new Error(`DB Error: ${err.message} [SQL: ${sql}]`);
+  }
 }
 
 /**
  * Execute modifying statement (INSERT, UPDATE, DELETE)
  */
 export async function dbExecute(sql: string, params: any[] = []): Promise<{ changes: number; lastrowid: number }> {
-  const payload = JSON.stringify({ action: 'execute', sql, params });
-  return new Promise((resolve, reject) => {
-    execFile('python3', [BRIDGE_PATH, payload], (err, stdout, stderr) => {
-      if (err) {
-        return reject(new Error(`DB Bridge error: ${stderr || err.message}`));
-      }
-      try {
-        const res = JSON.parse(stdout.trim());
-        if (res.status === 'error') {
-          return reject(new Error(res.message));
-        }
-        resolve({ changes: res.changes, lastrowid: res.lastrowid });
-      } catch (parseErr: any) {
-        reject(new Error(`Failed to parse DB bridge execute: ${stdout}`));
-      }
-    });
-  });
+  const db = await getDb();
+  try {
+    if (params && params.length > 0) {
+      const sanitized = params.map(p => (typeof p === 'boolean' ? (p ? 1 : 0) : p));
+      db.run(sql, sanitized);
+    } else {
+      db.run(sql);
+    }
+    const changes = db.getRowsModified();
+    const lastIdRes = db.exec('SELECT last_insert_rowid() as id');
+    const lastrowid = Number(lastIdRes[0]?.values[0]?.[0] || 0);
+    persistDb();
+    return { changes, lastrowid };
+  } catch (err: any) {
+    throw new Error(`DB Error: ${err.message} [SQL: ${sql}]`);
+  }
 }
 
 /**
  * Reset database to pristine seed state
  */
 export async function dbResetSeed(): Promise<void> {
-  const payload = JSON.stringify({ action: 'reset_seed' });
-  return new Promise((resolve, reject) => {
-    execFile('python3', [BRIDGE_PATH, payload], (err, stdout, stderr) => {
-      if (err) return reject(new Error(`Reset error: ${stderr || err.message}`));
-      try {
-        const res = JSON.parse(stdout.trim());
-        if (res.status === 'error') return reject(new Error(res.message));
-        resolve();
-      } catch (e: any) {
-        reject(e);
-      }
-    });
-  });
+  const db = await getDb();
+  if (fs.existsSync(SEED_DB_PATH) && SQL) {
+    try {
+      const seedBuffer = fs.readFileSync(SEED_DB_PATH);
+      db.close();
+      dbInstance = new SQL.Database(seedBuffer);
+      persistDb();
+      return;
+    } catch (e) {
+      console.warn('Failed to reload seed file:', e);
+    }
+  }
+  db.run(`
+    DELETE FROM audit_events;
+    DELETE FROM lesson_completions;
+    DELETE FROM sus_surveys;
+    DELETE FROM assessment_responses;
+    DELETE FROM recommendations;
+    DELETE FROM student_mastery;
+    DELETE FROM attempt_test_results;
+    DELETE FROM student_attempts;
+  `);
+  persistDb();
 }
 
 /* ================= USER SERVICES ================= */

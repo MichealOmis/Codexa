@@ -40,6 +40,11 @@ import {
 } from '../research_service';
 
 import {
+  runPlaygroundPyodide,
+  runAssessmentPyodide
+} from '../pyodide_sandbox';
+
+import {
   generatePedagogicalExplanation
 } from '../gemini_service';
 
@@ -515,6 +520,40 @@ async function runTestSuite() {
     assert(
       lines.length >= 3 && hasNA,
       'TEST 28: Missing pre/post assessment values are safely represented as N/A in research exports'
+    );
+
+    // TEST 29: In-process database operations execute natively without python3 subprocess dependency
+    const dbTestUser = await getUserByEmail('student@example.edu');
+    assert(
+      dbTestUser !== null && dbTestUser.username === 'student_demo',
+      'TEST 29: In-process database operations execute without requiring external python3 subprocess'
+    );
+
+    // TEST 30: Pyodide execution fallback operates when system python3 is absent
+    const pyoPlayground = await runPlaygroundPyodide({
+      code: 'print("Pyodide Engine Active")',
+      input_data: '',
+      timeout_seconds: 2.0
+    });
+    const pyoAssessment = await runAssessmentPyodide({
+      code: 'def double_val(x):\n    return x * 2\n',
+      test_cases: [
+        {
+          id: 'tc_pyo_1',
+          input_data: '',
+          expected_output: '10',
+          function_call: 'double_val(5)',
+          is_hidden: false
+        }
+      ],
+      timeout_seconds: 2.0
+    });
+    assert(
+      pyoPlayground.success &&
+      pyoPlayground.stdout.trim() === 'Pyodide Engine Active' &&
+      pyoAssessment.all_passed &&
+      pyoAssessment.score_percentage === 100,
+      'TEST 30: In-process Pyodide Python execution passes assessment test cases independently of system binaries'
     );
 
     console.log('\n====================================================');

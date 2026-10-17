@@ -1,0 +1,132 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "UserProfile",
+      "description": "User profile containing basic info, role, and opt-in settings",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "User identifier"
+        },
+        "username": {
+          "type": "string",
+          "maxLength": 100,
+          "description": "Display name or handle"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["student", "instructor", "researcher"],
+          "description": "User role"
+        },
+        "leaderboardOptIn": {
+          "type": "boolean",
+          "description": "Whether user opted into leaderboard"
+        },
+        "masteryPoints": {
+          "type": "number",
+          "description": "Total mastery points accumulated"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "Account creation timestamp"
+        }
+      },
+      "required": ["id", "username", "role"]
+    },
+    "LeaderboardEntry": {
+      "title": "LeaderboardEntry",
+      "description": "Anonymized leaderboard record for opt-in participants",
+      "type": "object",
+      "properties": {
+        "participantId": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Anonymized participant ID"
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Owner user ID"
+        },
+        "masteryPoints": {
+          "type": "number",
+          "description": "Total mastery points"
+        },
+        "modulesCompleted": {
+          "type": "number",
+          "description": "Number of completed curriculum modules"
+        },
+        "exercisesPassed": {
+          "type": "number",
+          "description": "Number of coding exercises solved"
+        },
+        "updatedAt": {
+          "type": "string",
+          "description": "Last update timestamp"
+        }
+      },
+      "required": ["participantId", "userId", "masteryPoints", "modulesCompleted", "exercisesPassed"]
+    },
+    "ExerciseAttempt": {
+      "title": "ExerciseAttempt",
+      "description": "Student coding exercise submission summary",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Unique attempt identifier"
+        },
+        "userId": {
+          "type": "string",
+          "maxLength": 128,
+          "description": "Student user ID"
+        },
+        "exerciseId": {
+          "type": "string",
+          "maxLength": 64,
+          "description": "Curriculum exercise identifier"
+        },
+        "passed": {
+          "type": "boolean",
+          "description": "Whether all tests passed"
+        },
+        "passedTests": {
+          "type": "number",
+          "description": "Count of passed test cases"
+        },
+        "totalTests": {
+          "type": "number",
+          "description": "Total test cases"
+        },
+        "timestamp": {
+          "type": "string",
+          "description": "Submission ISO timestamp"
+        }
+      },
+      "required": ["id", "userId", "exerciseId", "passed"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": {
+        "$ref": "#/entities/UserProfile"
+      },
+      "description": "Individual user profiles protected by user ownership"
+    },
+    "/leaderboard/{participantId}": {
+      "schema": {
+        "$ref": "#/entities/LeaderboardEntry"
+      },
+      "description": "Opt-in anonymized leaderboard entries"
+    },
+    "/attempts/{attemptId}": {
+      "schema": {
+        "$ref": "#/entities/ExerciseAttempt"
+      },
+      "description": "Per-user exercise attempt logs"
+    }
+  }
+}

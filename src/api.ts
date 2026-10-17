@@ -65,6 +65,15 @@ export const api = {
     return res;
   },
 
+  async firebaseLogin(payload: { email: string; displayName?: string | null; firebaseUid?: string }): Promise<{ user: User; token: string }> {
+    const res = await fetchApi<{ user: User; token: string }>('/api/auth/firebase-login', {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+    setStoredToken(res.token);
+    return res;
+  },
+
   async getMe(): Promise<{ user: User }> {
     return fetchApi<{ user: User }>('/api/auth/me');
   },

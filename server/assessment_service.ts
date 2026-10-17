@@ -12,6 +12,7 @@ import {
   evaluatePedagogicalRules
 } from './tutoring_engine';
 import type { StudentAttempt } from './types';
+import { runPlaygroundPyodide, runAssessmentPyodide } from './pyodide_sandbox';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -78,7 +79,25 @@ export async function runPlayground(req: PlaygroundRequest): Promise<PlaygroundR
   });
 
   return new Promise((resolve) => {
-    execFile('python3', [SANDBOX_PATH, payload], { timeout: 4000 }, (err, stdout, stderr) => {
+    execFile('python3', [SANDBOX_PATH, payload], { timeout: 4000 }, async (err, stdout, stderr) => {
+      if (err && (err.code === 'ENOENT' || err.message.includes('ENOENT'))) {
+        try {
+          const pyoRes = await runPlaygroundPyodide({
+            code: req.code,
+            input_data: req.input_data,
+            timeout_seconds: req.timeout_seconds
+          });
+          return resolve(pyoRes);
+        } catch (pyoErr: any) {
+          return resolve({
+            success: false,
+            stdout: '',
+            stderr: `Pyodide execution error: ${pyoErr.message}`,
+            error_category: 'ExecutionError',
+            execution_time_ms: 0
+          });
+        }
+      }
       if (err && !stdout) {
         return resolve({
           success: false,
@@ -135,7 +154,19 @@ export async function submitAssessment(req: AssessmentRequest): Promise<Assessme
   });
 
   const sandboxOutput: any = await new Promise((resolve, reject) => {
-    execFile('python3', [SANDBOX_PATH, payload], { timeout: 8000 }, (err, stdout, stderr) => {
+    execFile('python3', [SANDBOX_PATH, payload], { timeout: 8000 }, async (err, stdout, stderr) => {
+      if (err && (err.code === 'ENOENT' || err.message.includes('ENOENT'))) {
+        try {
+          const pyoOutput = await runAssessmentPyodide({
+            code: req.code,
+            test_cases: formattedTestCases,
+            timeout_seconds: 2.0
+          });
+          return resolve(pyoOutput);
+        } catch (pyoErr: any) {
+          return reject(new Error(`Pyodide assessment failed: ${pyoErr.message}`));
+        }
+      }
       if (err && !stdout) {
         return reject(new Error(`Sandbox execution failed: ${stderr || err.message}`));
       }

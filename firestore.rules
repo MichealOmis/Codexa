@@ -1,0 +1,85 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 1. Default-deny safety net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Helper functions
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isValidUserProfile(data) {
+      return data.keys().hasAll(['id', 'username', 'role']) &&
+             data.keys().hasOnly(['id', 'username', 'role', 'leaderboardOptIn', 'masteryPoints', 'createdAt']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.username is string && data.username.size() <= 100 &&
+             data.role in ['student', 'instructor', 'researcher'] &&
+             (!('leaderboardOptIn' in data) || data.leaderboardOptIn is bool) &&
+             (!('masteryPoints' in data) || (data.masteryPoints is number && data.masteryPoints >= 0)) &&
+             (!('createdAt' in data) || (data.createdAt is string && data.createdAt.size() <= 64));
+    }
+
+    function isValidLeaderboardEntry(data) {
+      return data.keys().hasAll(['participantId', 'userId', 'masteryPoints', 'modulesCompleted', 'exercisesPassed']) &&
+             data.keys().hasOnly(['participantId', 'userId', 'masteryPoints', 'modulesCompleted', 'exercisesPassed', 'updatedAt']) &&
+             data.participantId is string && data.participantId.size() <= 64 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.masteryPoints is number && data.masteryPoints >= 0 &&
+             data.modulesCompleted is number && data.modulesCompleted >= 0 &&
+             data.exercisesPassed is number && data.exercisesPassed >= 0 &&
+             (!('updatedAt' in data) || (data.updatedAt is string && data.updatedAt.size() <= 64));
+    }
+
+    function isValidExerciseAttempt(data) {
+      return data.keys().hasAll(['id', 'userId', 'exerciseId', 'passed']) &&
+             data.keys().hasOnly(['id', 'userId', 'exerciseId', 'passed', 'passedTests', 'totalTests', 'timestamp']) &&
+             data.id is string && data.id.size() <= 128 &&
+             data.userId is string && data.userId.size() <= 128 &&
+             data.exerciseId is string && data.exerciseId.size() <= 64 &&
+             data.passed is bool &&
+             (!('passedTests' in data) || (data.passedTests is number && data.passedTests >= 0)) &&
+             (!('totalTests' in data) || (data.totalTests is number && data.totalTests >= 0)) &&
+             (!('timestamp' in data) || (data.timestamp is string && data.timestamp.size() <= 64));
+    }
+
+    // Collection 1: User Profiles
+    match /users/{userId} {
+      allow get: if isSignedIn() && isValidId(userId) && request.auth.uid == userId;
+      allow list: if isSignedIn() && resource.data.id == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(userId) && request.auth.uid == userId && incoming().id == userId && isValidUserProfile(incoming());
+      allow update: if isSignedIn() && isValidId(userId) && request.auth.uid == userId && incoming().id == userId && isValidUserProfile(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['username', 'leaderboardOptIn', 'masteryPoints']);
+      allow delete: if false;
+    }
+
+    // Collection 2: Leaderboard (anonymized entries)
+    match /leaderboard/{participantId} {
+      allow read: if isSignedIn();
+      allow create: if isSignedIn() && isValidId(participantId) && incoming().userId == request.auth.uid && isValidLeaderboardEntry(incoming());
+      allow update: if isSignedIn() && isValidId(participantId) && existing().userId == request.auth.uid && incoming().userId == request.auth.uid && isValidLeaderboardEntry(incoming()) && incoming().diff(existing()).affectedKeys().hasOnly(['masteryPoints', 'modulesCompleted', 'exercisesPassed', 'updatedAt']);
+      allow delete: if isSignedIn() && isValidId(participantId) && existing().userId == request.auth.uid;
+    }
+
+    // Collection 3: Exercise attempts
+    match /attempts/{attemptId} {
+      allow get: if isSignedIn() && isValidId(attemptId) && resource.data.userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && isValidId(attemptId) && incoming().userId == request.auth.uid && isValidExerciseAttempt(incoming());
+      allow update, delete: if false;
+    }
+  }
+}
