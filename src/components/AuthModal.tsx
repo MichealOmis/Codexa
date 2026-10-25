@@ -107,33 +107,24 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           </button>
         </div>
 
-        {/* Quick Demo Logins Bar (University Evaluation Feature) */}
+        {/* Quick Demo Login Bar */}
         <div className="rounded-xl bg-slate-950 p-3.5 border border-slate-800/80 space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
               <Sparkles className="w-3.5 h-3.5" />
-              1-Click Project Defence Demo Logins
+              1-Click Student Demo Login
             </span>
             <span className="text-[10px] text-slate-500 font-mono">Evaluation Mode</span>
           </div>
-          <div className="grid grid-cols-2 gap-2 pt-1">
+          <div className="pt-1">
             <button
               type="button"
               onClick={() => handleQuickLogin('student@example.edu', 'password123')}
               disabled={loading}
-              className="py-1.5 px-2.5 rounded-lg border border-emerald-700/50 bg-emerald-950/30 hover:bg-emerald-900/40 text-emerald-300 text-xs flex items-center justify-center gap-1.5 font-medium transition-colors cursor-pointer"
+              className="w-full py-1.5 px-2.5 rounded-lg border border-emerald-700/50 bg-emerald-950/30 hover:bg-emerald-900/40 text-emerald-300 text-xs flex items-center justify-center gap-1.5 font-medium transition-colors cursor-pointer"
             >
               <GraduationCap className="w-3.5 h-3.5 text-emerald-400" />
               Student Demo
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickLogin('lecturer@example.edu', 'adminpass123')}
-              disabled={loading}
-              className="py-1.5 px-2.5 rounded-lg border border-indigo-700/50 bg-indigo-950/30 hover:bg-indigo-900/40 text-indigo-300 text-xs flex items-center justify-center gap-1.5 font-medium transition-colors cursor-pointer"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-indigo-400" />
-              Lecturer Demo
             </button>
           </div>
         </div>
@@ -227,19 +218,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
             </div>
           </div>
 
-          {mode === 'register' && (
-            <div className="space-y-1">
-              <label className="text-slate-300 font-medium">Account Type</label>
-              <select
-                value={role}
-                onChange={(e) => setRole(e.target.value as any)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-slate-100 focus:outline-none focus:border-emerald-500"
-              >
-                <option value="student">Student Learner (Standard Participant)</option>
-                <option value="administrator">Lecturer / Researcher (Admin Access)</option>
-              </select>
-            </div>
-          )}
+
 
           <button
             type="submit"

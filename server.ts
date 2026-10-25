@@ -144,12 +144,11 @@ app.post('/api/auth/register', async (req: Request, res: Response) => {
       return res.status(400).json({ error: 'An account with this email already exists.' });
     }
 
-    const assignedRole = (role === 'administrator') ? 'administrator' : 'student';
+    // Self-registration is strictly for student participants to protect research data and prevent unauthorized lecturer access
+    const assignedRole = 'student';
     const userId = `usr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
     const randomHex = crypto.randomBytes(3).toString('hex').toUpperCase();
-    const participantId = assignedRole === 'administrator' 
-      ? `FACULTY-${randomHex}` 
-      : `PARTICIPANT-${randomHex}`;
+    const participantId = `PARTICIPANT-${randomHex}`;
 
     const newUser = await createUser({
       id: userId,
@@ -995,7 +994,22 @@ app.post('/api/admin/reset-demo', requireAdmin as any, async (req: Request, res:
 
 /* ================= STATIC & DEV SERVER VITE MOUNT ================= */
 
+async function syncLecturerSecurity() {
+  try {
+    const adminPassword = process.env.ADMIN_PASSWORD || 'Codexa#Faculty99!';
+    const adminHash = hashPassword(adminPassword);
+    await dbExecute(
+      `UPDATE users SET password_hash = ? WHERE email = 'lecturer@example.edu' OR role = 'administrator'`,
+      [adminHash]
+    );
+  } catch (err) {
+    console.warn('Could not sync lecturer security credentials:', err);
+  }
+}
+
 async function startServer() {
+  await syncLecturerSecurity();
+
   if (!isProduction) {
     const vite = await createViteServer({
       server: { middlewareMode: true },

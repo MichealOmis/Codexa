@@ -44,7 +44,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
           </h1>
 
           <p className="text-base sm:text-lg text-slate-300 leading-relaxed">
-            An academic software system combining structured introductory Python curriculum, automated isolated code assessment, a Bayesian-informed student mastery model, and transparent rule-based pedagogical recommendations.
+            An academic software system combining structured introductory Python curriculum, automated isolated code assessment, an explainable rule-based student mastery model, and transparent pedagogical recommendations.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -60,11 +60,11 @@ export const LandingView: React.FC<LandingViewProps> = ({
 
             <button
               type="button"
-              onClick={() => onSwitchRole('administrator')}
+              onClick={onOpenAuth}
               className="flex items-center px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-700 font-semibold text-sm transition-all cursor-pointer"
             >
               <ShieldCheck className="w-4 h-4 mr-2 text-indigo-400" />
-              Lecturer Management Portal
+              Lecturer Portal Login
             </button>
 
             <button

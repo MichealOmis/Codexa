@@ -73,9 +73,9 @@ export default function App() {
         setUser(res.user);
         setCurrentView('dashboard');
       } else {
-        const res = await api.login('lecturer@example.edu', 'adminpass123');
-        setUser(res.user);
-        setCurrentView('admin');
+        // Lecturer access requires explicit authentication with administrator credentials
+        setAuthInitialMode('login');
+        setIsAuthOpen(true);
       }
     } catch (err) {
       console.error(err);

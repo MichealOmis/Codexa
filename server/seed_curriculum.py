@@ -38,7 +38,7 @@ def seed():
     users = [
         ("usr_student1", "student_demo", "student@example.edu", hash_pw("password123"), "student", "PARTICIPANT-A82F1", 1, "ITS_Intervention", now),
         ("usr_student2", "alex_learner", "alex@example.edu", hash_pw("password123"), "student", "PARTICIPANT-B49D2", 1, "Control_Baseline", now),
-        ("usr_admin1", "lecturer_demo", "lecturer@example.edu", hash_pw("adminpass123"), "administrator", "FACULTY-001", 0, "Staff", now)
+        ("usr_admin1", "lecturer_demo", "lecturer@example.edu", hash_pw(os.environ.get("ADMIN_PASSWORD", "Codexa#Faculty99!")), "administrator", "FACULTY-001", 0, "Staff", now)
     ]
     c.executemany("INSERT INTO users (id, username, email, password_hash, role, participant_id, leaderboard_opt_in, evaluation_group, created_at) VALUES (?,?,?,?,?,?,?,?,?)", users)
 

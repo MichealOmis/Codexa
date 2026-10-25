@@ -64,14 +64,6 @@ export const Navbar: React.FC<NavbarProps> = ({
             >
               Demo Student
             </button>
-            <button
-              type="button"
-              onClick={() => onSwitchRole('administrator')}
-              className="px-2 py-0.5 rounded text-[10px] bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-800/50 cursor-pointer"
-              title="Quick demo switch to lecturer profile"
-            >
-              Demo Lecturer
-            </button>
           </div>
         </div>
       </div>
