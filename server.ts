@@ -976,7 +976,7 @@ app.get('/api/admin/export/:type', requireAdmin as any, async (req: Request, res
 
     const csvContent = await exportResearchDatasetCSV(type);
     res.setHeader('Content-Type', 'text/csv');
-    res.setHeader('Content-Disposition', `attachment; filename="pytutor_evaluation_${type}_${Date.now()}.csv"`);
+    res.setHeader('Content-Disposition', `attachment; filename="codexa_evaluation_${type}_${Date.now()}.csv"`);
     return res.send(csvContent);
   } catch (err: any) {
     return res.status(500).json({ error: err.message });
@@ -1011,7 +1011,7 @@ async function startServer() {
   }
 
   app.listen(PORT, '0.0.0.0', () => {
-    console.log(`PyTutor Intelligent Tutoring System running on http://0.0.0.0:${PORT}`);
+    console.log(`Codexa Intelligent Tutoring System running on http://0.0.0.0:${PORT}`);
   });
 }
 

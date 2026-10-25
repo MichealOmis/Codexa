@@ -9,10 +9,10 @@ import type {
   Recommendation
 } from './types';
 
-const TOKEN_KEY = 'pytutor_auth_token';
+const TOKEN_KEY = 'codexa_auth_token';
 
 export function getStoredToken(): string | null {
-  return localStorage.getItem(TOKEN_KEY);
+  return localStorage.getItem(TOKEN_KEY) || localStorage.getItem('pytutor_auth_token');
 }
 
 export function setStoredToken(token: string | null) {
@@ -20,6 +20,7 @@ export function setStoredToken(token: string | null) {
     localStorage.setItem(TOKEN_KEY, token);
   } else {
     localStorage.removeItem(TOKEN_KEY);
+    localStorage.removeItem('pytutor_auth_token');
   }
 }
 
@@ -270,7 +271,7 @@ export const api = {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `pytutor_evaluation_${type}_${Date.now()}.csv`;
+    a.download = `codexa_evaluation_${type}_${Date.now()}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

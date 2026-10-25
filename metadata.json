@@ -1,5 +1,5 @@
 {
-  "name": "PyTutor - Adaptive Python Intelligent Tutoring System",
+  "name": "Codexa - Adaptive Python Intelligent Tutoring System",
   "description": "An Intelligent Tutoring System for personalized introductory Python learning with rule-based student modeling, isolated code assessment, and research analytics.",
   "requestFramePermissions": [],
   "majorCapabilities": [

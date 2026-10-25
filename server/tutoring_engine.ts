@@ -1,5 +1,5 @@
 /**
- * PyTutor Explainable Rule-Based Intelligent Tutoring Engine
+ * Codexa Explainable Rule-Based Intelligent Tutoring Engine
  *
  * Implements the Deterministic Student Model, Topic-Level Mastery Aggregation,
  * and Pedagogical Tutoring Rules with fully explainable recommendations.

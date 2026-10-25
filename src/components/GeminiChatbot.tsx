@@ -30,7 +30,7 @@ export const GeminiChatbot: React.FC = () => {
     {
       id: 'msg_init',
       role: 'model',
-      content: "Hello! I am your PyTutor AI Coach. Ask me about Python concepts, loop conditions, data types, or error diagnosis. How can I help your learning today?",
+      content: "Hello! I am your Codexa AI Coach. Ask me about Python concepts, loop conditions, data types, or error diagnosis. How can I help your learning today?",
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
     }
   ]);
@@ -131,7 +131,7 @@ export const GeminiChatbot: React.FC = () => {
             className="flex items-center space-x-2.5 px-4 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 hover:from-emerald-500 hover:to-indigo-500 text-white font-bold text-xs tracking-wide shadow-2xl shadow-emerald-500/30 border border-emerald-400/30 transition-all hover:scale-105 cursor-pointer"
           >
             <Bot className="w-5 h-5 text-emerald-200" />
-            <span>Ask PyTutor AI Coach</span>
+            <span>Ask Codexa AI Coach</span>
             <span className="w-2 h-2 rounded-full bg-emerald-300 animate-ping" />
           </button>
         )}
@@ -148,7 +148,7 @@ export const GeminiChatbot: React.FC = () => {
               </div>
               <div>
                 <div className="flex items-center space-x-2">
-                  <h3 className="font-bold text-sm text-slate-100">PyTutor AI Coach</h3>
+                  <h3 className="font-bold text-sm text-slate-100">Codexa AI Coach</h3>
                   <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded-full bg-slate-850 text-slate-300 border border-slate-750">
                     Multi-Turn
                   </span>

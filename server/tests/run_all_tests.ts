@@ -50,7 +50,7 @@ import {
 
 async function runTestSuite() {
   console.log('====================================================');
-  console.log('  PyTutor ITS: Comprehensive Automated Test Suite   ');
+  console.log('  Codexa ITS: Comprehensive Automated Test Suite   ');
   console.log('====================================================\n');
 
   let passed = 0;

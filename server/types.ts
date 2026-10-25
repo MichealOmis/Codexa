@@ -1,5 +1,5 @@
 /**
- * PyTutor Intelligent Tutoring System Data Contracts and Type Definitions
+ * Codexa Intelligent Tutoring System Data Contracts and Type Definitions
  */
 
 export type UserRole = 'student' | 'administrator';

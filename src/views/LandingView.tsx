@@ -85,7 +85,7 @@ export const LandingView: React.FC<LandingViewProps> = ({
             Intelligent Tutoring System Architecture
           </h2>
           <p className="text-xs sm:text-sm text-slate-400">
-            PyTutor strictly implements the four classical ITS architectural modules documented in educational technology literature.
+            Codexa strictly implements the four classical ITS architectural modules documented in educational technology literature.
           </p>
         </div>
 

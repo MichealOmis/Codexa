@@ -88,7 +88,7 @@ export const Navbar: React.FC<NavbarProps> = ({
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <span className="font-extrabold text-lg text-slate-100 tracking-tight">PyTutor</span>
+              <span className="font-extrabold text-lg text-slate-100 tracking-tight">Codexa</span>
               <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 uppercase tracking-wider">
                 ITS Core
               </span>

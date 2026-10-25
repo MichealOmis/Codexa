@@ -86,7 +86,7 @@ export default function App() {
     return (
       <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center text-slate-400 space-y-3 font-sans">
         <div className="w-8 h-8 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-        <p className="text-xs font-mono">Initializing PyTutor Intelligent Tutoring System...</p>
+        <p className="text-xs font-mono">Initializing Codexa Intelligent Tutoring System...</p>
       </div>
     );
   }
@@ -169,7 +169,7 @@ export default function App() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="space-y-1 text-center sm:text-left">
             <p className="font-semibold text-slate-400">
-              PyTutor • Intelligent Tutoring System for Python Programming
+              Codexa • Intelligent Tutoring System for Python Programming
             </p>
             <p className="text-[11px]">
               Undergraduate Final-Year Research Project in Educational Technology & Software Engineering.

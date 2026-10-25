@@ -186,14 +186,14 @@ export async function handleMultiTurnChat(req: ChatRequest): Promise<ChatRespons
   // - gemini-3.5-flash for general tasks
   // - gemini-3.1-flash-lite for fast tasks
   let modelName = 'gemini-3.5-flash';
-  let systemInstruction = "You are PyTutor AI Coach, an intelligent tutoring system mentor for introductory Python. Guide the student using supportive Socratic dialogue, intuitive conceptual examples, and diagnostic questions. Do not write complete solutions to exercises directly; instead, guide the student to discover the answers.";
+  let systemInstruction = "You are Codexa AI Coach, an intelligent tutoring system mentor for introductory Python. Guide the student using supportive Socratic dialogue, intuitive conceptual examples, and diagnostic questions. Do not write complete solutions to exercises directly; instead, guide the student to discover the answers.";
 
   if (taskType === 'complex') {
     modelName = 'gemini-3.1-pro-preview';
-    systemInstruction = "You are PyTutor Advanced Code & Algorithm Reviewer. Deeply examine Python code structure, execution trace, edge conditions, boundary limits, and algorithmic decomposition for introductory programming students.";
+    systemInstruction = "You are Codexa Advanced Code & Algorithm Reviewer. Deeply examine Python code structure, execution trace, edge conditions, boundary limits, and algorithmic decomposition for introductory programming students.";
   } else if (taskType === 'fast') {
     modelName = 'gemini-3.1-flash-lite';
-    systemInstruction = "You are PyTutor Fast Helper. Provide direct, concise, and accurate explanations of Python syntax, errors, and built-in functions in under 3 sentences.";
+    systemInstruction = "You are Codexa Fast Helper. Provide direct, concise, and accurate explanations of Python syntax, errors, and built-in functions in under 3 sentences.";
   }
 
   if (req.context?.topicName) {
@@ -205,7 +205,7 @@ export async function handleMultiTurnChat(req: ChatRequest): Promise<ChatRespons
 
   if (!apiKey || apiKey.trim() === '') {
     const lastUserMsg = req.messages.filter(m => m.role === 'user').pop()?.content.toLowerCase() || '';
-    let fallbackReply = "Hello! I am your PyTutor AI Coach. In this Python learning environment, we focus on understanding concepts step by step. What concept or exercise can I help guide you through?";
+    let fallbackReply = "Hello! I am your Codexa AI Coach. In this Python learning environment, we focus on understanding concepts step by step. What concept or exercise can I help guide you through?";
 
     if (lastUserMsg.includes('loop') || lastUserMsg.includes('while') || lastUserMsg.includes('for')) {
       fallbackReply = "Loops allow you to repeat actions. Use `for` loops with `range()` when you know how many times to repeat, and `while` loops when you need to repeat until a boolean condition turns False. Remember to ensure while loop conditions change during each iteration to avoid infinite loops!";
